@@ -1,7 +1,7 @@
 // Creating map object
 var map = L.map("map", {
-    center: [42.73, -84.55],
-    zoom: 11
+    center: [44.18, -84.50],
+    zoom: 6
 });
 
 /* Control panel to display map layers */
@@ -32,41 +32,39 @@ var streetmap = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 });
 controlLayers.addBaseLayer(streetmap, 'OpenStreetMap');
 
-function chooseColor(data) {
-    return data > 66 ? 'red' :
-        data < 33 ? 'green' :
+function chooseColor(frl_count, per_white) {
+    return frl_count > 66 && per_white < 50 ? 'purple' :
+        frl_count > 66 && per_white > 50 ? 'red' :
+        frl_count < 33 ? 'green' :
         "yellow";
 }
 
 // see more basemap options at https://leaflet-extras.github.io/leaflet-providers/preview/
-var link = "https://school-data-server.herokuapp.com/api";
+var link = "https://school-data-server.herokuapp.com/school_api";
 
 // Read markers data from cleaned_data.csv
 d3.json(link, function(data) {
     
     // For each row in data, create a marker and add it to the map
     // For each row, columns `lat`, `lng`, and `eligible_for_frl` are required
-    for (var i = 0; i < data.district_data.length; i++) {
-        var lat = data.district_data[i].lat;
-        var lng = data.district_data[i].lng;
-        var district = data.district_data[i].district;
-        var frl_count = data.district_data[i].prcnt_stdnts_eligible_for_frl;
-        var majority_minority = data.district_data[i].majority_minority;
+    for (var i = 0; i < data.school_data.length; i++) {
+        var lat = data.school_data[i].lat;
+        var lng = data.school_data[i].lng;
+        var district = data.school_data[i].district;
+        var frl_count = data.school_data[i].prcnt_stdnts_eligible_for_frl;
+        var majority_minority = data.school_data[i].majority_minority;
         var school_location = [lat,lng];
+        var per_white = data.school_data[i].prcnt_wht;
 
         var marker = L.circle(school_location, 500, {
             stroke: true,
-            color: chooseColor(frl_count),
+            color: chooseColor(frl_count, per_white),
             opacity: 1,
             fill: true,
-            fillColor: chooseColor(frl_count),
+            fillColor: chooseColor(frl_count, per_white),
             fillOpacity: 1,
         }).bindPopup(district + "<br> Free and Reduced Lunch Eligibility: " + frl_count + "%" + "<br> Majority-Minority District: " + majority_minority);
       
         marker.addTo(map);
     }
 });
-
-
-///// ---------------------------------------------------------------- //////
-
