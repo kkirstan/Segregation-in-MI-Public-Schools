@@ -20,11 +20,91 @@ function chooseMinority(frl_count, per_white) {
         'yellow';
 }
 
+function chooseDemo(per_white) {
+    return per_white < 50 ? 'blue' :
+    'red' ;
+}
+
 // API links
 var districtLink = "https://school-data-server.herokuapp.com/api";
 
 var districtMarkers = [];
 var minorityMarkers = [];
+var demoMarkers = [];
+
+function piechart(data, district){
+    
+    var width = 200;
+    var height = 200;
+    var margin = {left:20,right:20,top:20,bottom:20};
+
+
+    var div = d3.create("div")
+    var svg = div.append("svg")
+      .attr("width", width+margin.left+margin.right)
+      .attr("height", height+margin.top+margin.bottom);
+    var g=svg.append("g")
+      .attr("transform","translate(" + (width / 2 -30) + "," + height / 2 + ")");  
+
+    
+    var color = d3.scaleOrdinal().domain(data).range(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c'])
+    
+    // Compute the position of each group on the pie:
+    var pie = d3.pie()
+    .value(function(d) {return d.value; })
+    var data_ready = pie(d3.entries(data))
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    
+    g.selectAll(null)
+    .data(data_ready)
+    .enter()
+    .append('path')
+    .attr('d', d3.arc()
+    .innerRadius(30)
+    .outerRadius(50)
+    )
+    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr("stroke", "black")
+    .style("stroke-width", "2px")
+    .style("opacity", 0.7);
+
+    svg.append("g")
+               .attr("transform", "translate(" + (width / 2 - 80) + "," + 20 + ")")
+               .append("text")
+               .text(district)
+               .attr("class", "title")
+
+
+    var labelHeight = 18;
+    const legend = svg
+    .append('g')
+    .attr('transform', "translate(" + (70*2) + "," + 50 + ")");
+
+    legend
+    .selectAll(null)
+    .data(data_ready)
+    .enter()
+    .append('rect')
+    .attr('y', d => labelHeight * d.index * 1.8)
+    .attr('width', labelHeight)
+    .attr('height', labelHeight)
+    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr('stroke', 'grey')
+    .style('stroke-width', '1px');
+
+    legend
+    .selectAll(null)
+    .data(data_ready)
+    .enter()
+    .append('text')
+    .text(d => d.data.key)
+    .attr('x', labelHeight * 1.2)
+    .attr('y', d => labelHeight * d.index * 1.8 + labelHeight)
+    .style('font-family', 'sans-serif')
+    .style('font-size', `${labelHeight}px`);
+
+    return div.node();
+};
 
 function createMap(districts) {
     // Create base layers
@@ -45,6 +125,8 @@ function createMap(districts) {
     // Create two separate layer groups: one for cities and one for states
     var districts = L.layerGroup(districtMarkers);
     var minorities = L.layerGroup(minorityMarkers);
+    var demo = L.layerGroup(demoMarkers);
+
     // Create a baseMaps object
     var baseMaps = {
         "Street Map": streetmap,
@@ -53,8 +135,9 @@ function createMap(districts) {
 
     // Create an overlay object
     var overlayMaps = {
-        "Districts": districts,
-        "Minority Districts": minorities,
+        "All Districts": districts,
+        "Majority-Minority": minorities,
+        "Demographics": demo,
     };
 
     // Create map object
@@ -117,10 +200,33 @@ function createLayers(data) {
             fillColor: chooseMinority(frl_count, per_white),
             fillOpacity: 1,  
         }).bindPopup(district + "<br> Free and Reduced Lunch Eligibility: " + frl_count + "%" + "<br> Majority-Minority District: " + majority_minority)
-    minorityMarkers.push(marker);
-
+    minorityMarkers.push(marker);  
     }
-    createMap(districtMarkers, minorityMarkers);
+    
+
+    for (var i = 0; i < data.district_data.length; i++) {
+        var lat = +data.district_data[i].lat;
+        var lng = +data.district_data[i].lng;
+        var district = data.district_data[i].district;
+        var demo_data = {White:data.district_data[i].ave_prcnt_wht, Black:data.district_data[i].ave_prcnt_bk, Hispanic:data.district_data[i].ave_prcnt_hisp, Asian:data.district_data[i].ave_prcnt_asn, Other:data.district_data[i].ave_prcnt_othr}
+        var per_white = data.district_data[i].ave_prcnt_wht;
+        var frl_count = data.district_data[i].prcnt_stdnts_eligible_for_frl;
+        var school_location = [lat, lng];
+
+        var marker = L.circle(school_location, 500, {
+            stroke: true,
+            opacity: 1,
+            fillOpacity: 0.75,
+            color: chooseDemo(per_white),
+            fillColor: chooseDemo(per_white),
+            // Adjust radius
+            radius: 2000
+        }).bindPopup(piechart(demo_data, district))
+    demoMarkers.push(marker);
+    }
+
+    createMap(districtMarkers, minorityMarkers, demoMarkers);
 }
+
 
 d3.json(districtLink, createLayers);
