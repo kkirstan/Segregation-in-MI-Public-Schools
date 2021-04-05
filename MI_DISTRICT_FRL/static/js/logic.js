@@ -14,6 +14,8 @@ function chooseColor(frl_count, per_white) {
 function chooseMinority(frl_count, per_white) {
     return frl_count > 66 && per_white > 50 ? 'red' :
         frl_count > 66 && per_white < 50 ? 'blue' :
+        frl_count < 33 && per_white < 50 ? 'blue' :
+        frl_count > 33 && frl_count < 66 && per_white < 50 ? 'blue' :
         frl_count < 33 ? 'green' :
         'yellow';
 }
