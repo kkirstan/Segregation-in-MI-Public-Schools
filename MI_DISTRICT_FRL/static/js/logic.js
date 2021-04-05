@@ -91,30 +91,26 @@ var schoolLink = "https://school-data-server.herokuapp.com/school_api";
 
 function createMap(districts) {
     // Create base layers
-    // Light Layer
-    var light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>',
-        tileSize: 512,
-        maxZoom: 18,
-        zoomOffset: -1,
-        id: "mapbox/streets-v11",
-        accessToken: API_KEY
-    });
 
     // Streetmap Layer
-    var streetmap = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: 'The map contributors',
-        tileSize: 512,
+    var streetmap = L.tileLayer('https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png', {
+        id: "mapbox/streetmap",
         maxZoom: 18,
-        zoomOffset: -1,
-        id: "mapbox-light",
-        accessToken: API_KEY
+	    accessToken: API_KEY,
+        attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+    });
+    // Carto Topo Layer
+    var light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        accessToken: API_KEY,
+        maxZoom: 19
     });
 
     // Create a baseMaps object
     var baseMaps = {
-        "Light": light,
-        "Street Map": streetmap
+        "Street Map": streetmap,
+        "Light Map": light,
     };
 
     // Create an overlay object
@@ -126,7 +122,7 @@ function createMap(districts) {
     var map = L.map("map", {
         center: [42.33, -83.04],
         zoom: 9,
-        layers: [light, streetmap, districts]
+        layers: [streetmap, light, districts]
     });
 
     L.control.layers(baseMaps, overlayMaps, {
