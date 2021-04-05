@@ -5,7 +5,7 @@ document.cookie = 'cookie1=value1; SameSite=Lax';
 document.cookie = 'cookie2=value2; SameSite=None; Secure';
 
 // Create function to select marker color for District filter
-function chooseColor(frl_count, per_white) {
+function chooseColor(frl_count) {
     return frl_count > 66 ? 'red' :
         frl_count < 33 ? 'green' :
         'yellow';
