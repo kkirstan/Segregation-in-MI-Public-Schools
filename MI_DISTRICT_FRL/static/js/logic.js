@@ -14,19 +14,18 @@ function chooseColor(frl_count, per_white) {
 function chooseMinority(frl_count, per_white) {
     return frl_count > 66 && per_white > 50 ? 'red' :
         frl_count > 66 && per_white < 50 ? 'blue' :
-        frl_count < 33 ? 'light green' :
+        frl_count < 33 ? 'green' :
         'yellow';
 }
 
 // API links
 var districtLink = "https://school-data-server.herokuapp.com/api";
-var schoolLink = "https://school-data-server.herokuapp.com/school_api";
+
 var districtMarkers = [];
 var minorityMarkers = [];
 
 function createMap(districts) {
     // Create base layers
-
     // Streetmap Layer
     var streetmap = L.tileLayer('https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png', {
         id: "mapbox/streetmap",
