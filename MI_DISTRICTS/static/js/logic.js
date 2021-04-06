@@ -222,7 +222,7 @@ function createMap(districts) {
         accessToken: API_KEY,
         maxZoom: 18
     });
-    // Create two separate layer groups: one for cities and one for states
+    // Create layer groups
     var districts = L.layerGroup(districtMarkers);
     var minorities = L.layerGroup(minorityMarkers);
     var demo = L.layerGroup(demoMarkers);

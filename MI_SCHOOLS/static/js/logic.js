@@ -213,7 +213,7 @@ function createMap(schools) {
         maxZoom: 18,
         id: "mapbox/streets-v11",
         accessToken: API_KEY
-    });
+    }); 
 
     // Carto Topo Layer
     var light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -222,7 +222,7 @@ function createMap(schools) {
         accessToken: API_KEY,
         maxZoom: 18
     });
-    // Create two separate layer groups: one for cities and one for states
+    // Create layer groups
     var schools = L.layerGroup(schoolMarkers);
     var minorities = L.layerGroup(minorityMarkers);
     var demo = L.layerGroup(demoMarkers);
