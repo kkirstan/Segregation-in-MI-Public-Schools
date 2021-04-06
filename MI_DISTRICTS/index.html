@@ -22,8 +22,16 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
           <div id="map"></div>
+        </div>
+        <div class="col-md-6">
+          <div class="select_dist">
+            <select id="selDataset" onchange="optionChanged(this.value)">
+              <option value="none" selected disabled hidden>-- Select a School District--</option>
+            </select>
+          </div>
+          <div id="demo-piechart"></div>
         </div>
       </div>
       <br>
