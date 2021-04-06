@@ -46,16 +46,26 @@
       </div>
     </div>
     <div class="row">
-      <p>During the 2015-16 school year, 67 percent of students in Michigan's K-12 public schools were white, 18 percent were African-American, 7 percent were Hispanic, 3 percent were Asian, 3 percent were multi-race and less than 1 percent were Native American.</p>
-      <p>Below there is and interactive map that shows the breakdown by district based on the state's most recent student count of February 2016</p>
-      <p>The database includes all public schools buildings or programs with at least 25 students, including charter schools. It does not include private schools, which do not report those numbers to the state.</p>
+      <p>During the 2015-16 school year, 67% of students in Michigan's K-12 public schools were white, 18% were African-American, 7% were Hispanic, 3% were Asian, 3% were multi-race and less than 1% were Native American.</p>
+      <p>Below there is an interactive map that shows the demographic breakdown by district, based on the state's most recent student count as of February 2016.</p>
+      <p>The database includes all public school buildings or programs with at least 25 students, including charter schools. It does not include private schools, which do not report racial demographic statictics to the state.</p>
     </div>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-6">
         <!-- The div that holds our map -->
         <div id="map"></div>
       </div>
+      <div class="col-md-6">
+        <div class="select_dist">
+          <select id="selDataset" onchange="optionChanged(this.value)">
+            <option value="none" selected disabled hidden>--Select a School District--</option>
+          </select>
+        </div>
+        <div id="demo-piechart"></div>
+      </div>
     </div>
+    <br>
+    <br>
   </div>
   
 
