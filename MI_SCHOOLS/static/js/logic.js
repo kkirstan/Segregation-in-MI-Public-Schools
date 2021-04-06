@@ -5,18 +5,19 @@ document.cookie = 'cookie2=value2; SameSite=None; Secure';
 
 // Create function to select marker color for District filter
 function chooseColor(frl_count) {
-    return frl_count > 66 ? 'red' :
+    return frl_count >= 66 ? 'red' :
         frl_count < 33 ? 'green' :
         'yellow';
 }
 // Create function to select marker color for Minority filter
 function chooseMinority(frl_count, per_white) {
-    return frl_count > 66 && per_white > 50 ? 'red' :
-        frl_count > 66 && per_white < 50 ? 'blue' :
+    return frl_count >= 66 && per_white >= 50 ? 'red' :
+        frl_count >= 66 && per_white < 50 ? 'blue' :
         frl_count < 33 && per_white < 50 ? 'blue' :
-        frl_count > 33 && frl_count < 66 && per_white < 50 ? 'blue' :
-        frl_count < 33 ? 'green' :
-        'yellow';
+        frl_count >= 33 && frl_count < 66 && per_white < 50 ? 'blue' :
+        frl_count < 33 && per_white > 50 ? 'green' :
+        frl_count >= 33 && frl_count < 66 && per_white >= 50 ? 'yellow' :
+        'blue';
 }
 
 function chooseDemo(per_white) {
