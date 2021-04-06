@@ -23,6 +23,8 @@ function chooseDemo(per_white) {
     return per_white < 50 ? 'blue' :
     'red' ;
 }
+// Create variable to link drop down menu
+var dropdownmenu = d3.select('#selDataset');
 
 // API links
 var schoolLink = "https://school-data-server.herokuapp.com/school_api";
@@ -72,9 +74,10 @@ function piechart(data, school){
                .append("text")
                .text(school)
                .attr("class", "title")
+               .style("textLength", "120")
 
 
-    var labelHeight = 18;
+    var labelHeight = 15;
     const legend = svg
     .append('g')
     .attr('transform', "translate(" + (70*2) + "," + 50 + ")");
@@ -103,7 +106,103 @@ function piechart(data, school){
     .style('font-size', `${labelHeight}px`);
 
     return div.node();
+}
+
+function optionChanged(value) {
+    console.log("#demo-piechart")
+    d3.select("#demo-piechart").html('')
+    var link = "https://school-data-server.herokuapp.com/school_api";
+        d3.json(link, function(data) {
+            var i=value;
+            var school_name= data.school_data[i].school;
+            var demo_data = {White:Math.round(data.school_data[i].prcnt_wht), Black:Math.round(data.school_data[i].prcnt_bk), Hispanic:Math.round(data.school_data[i].prcnt_hisp), Asian:Math.round(data.school_data[i].prcnt_asn), Other:Math.round(data.school_data[i].prcnt_othr)}
+            populate_piechart(demo_data, school_name);
+        });
 };
+
+function populate_piechart(data){
+    var width = 400;
+    var height = 300;
+    var margin = {left:20,right:20,top:20,bottom:20};
+    var svg =d3.select("#demo-piechart")
+      .append("svg")
+      .attr("width", width+margin.left+margin.right)
+      .attr("height", height+margin.top+margin.bottom);
+    var g=svg.append("g")
+      .attr("transform","translate(" + ((width / 3)+50) + "," + height / 2 + ")");  
+
+    
+    var color = d3.scaleOrdinal().domain(data).range(['#4daf4a','#377eb8','#ff7f00','#984ea3','#e41a1c'])
+    
+    // Compute the position of each group on the pie:
+    var pie = d3.pie()
+    .value(function(d) {return d.value; })
+    var data_ready = pie(d3.entries(data))
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    
+    var arc = d3.arc()
+    .innerRadius(50)
+    .outerRadius(80);
+
+    var label = d3.arc()
+        .outerRadius(50)
+        .innerRadius(80);
+
+
+    g.selectAll(null)
+    .data(data_ready)
+    .enter()
+    .append('path')
+    .attr('d', arc)
+    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr("stroke", "black")
+    .style("stroke-width", "2px")
+    .style("opacity", 0.7)
+    .transition()
+    .duration(1000)
+    .attrTween("d", function (d) {
+        var i = d3.interpolate(d.endAngle, d.startAngle);
+        return function (t) {
+            d.startAngle = i(t);
+            return arc(d);
+        }
+    });
+    
+    svg.append("g")
+               .attr("transform", "translate(" + (width / 2 - 300) + "," + 20 + ")")
+               .append("text")
+               .attr("class", "title");
+
+    var labelHeight = 18;
+    const legend = svg
+    .append('g')
+    .attr('transform', "translate(" + (100*3) + "," + 80 + ")");
+    
+    legend
+    .selectAll(null)
+    .data(data_ready)
+    .enter()
+    .append('rect')
+    .attr('y', d => labelHeight * d.index * 1.8)
+    .attr('width', labelHeight)
+    .attr('height', labelHeight)
+    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr('stroke', 'grey')
+    .style('stroke-width', '1px');
+
+    legend
+    .selectAll(null)
+    .data(data_ready)
+    .enter()
+    .append('text')
+    // .text(d => d.data.key)
+    .text(function (d) { return (d.data.value+'% '+d.data.key); })
+    // .text(piechart_text(data_ready))
+    .attr('x', labelHeight * 1.2)
+    .attr('y', d => labelHeight * d.index * 1.8 + labelHeight)
+    .style('font-family', 'sans-serif')
+    .style('font-size', `${labelHeight}px`);
+  }
 
 function createMap(schools) {
     // Create base layers
@@ -198,7 +297,7 @@ function createLayers(data) {
             fill: true,
             fillColor: chooseMinority(frl_count, per_white),
             fillOpacity: 1,  
-        }).bindPopup(school + "<br> Free and Reduced Lunch Eligibility: " + frl_count + "%" + "<br> Majority-Minority District: " + majority_minority)
+        }).bindPopup(school + "<br> Free and Reduced Lunch Eligibility: " + frl_count + "%" + "<br> Majority-Minority School: " + majority_minority)
     minorityMarkers.push(marker);  
     }
     
@@ -224,8 +323,16 @@ function createLayers(data) {
     demoMarkers.push(marker);
     }
 
+    var data_schoolnames = data.school_data;
+    data_schoolnames.forEach(function (d) {
+        dropdownmenu
+            .append("option")
+            .attr('value', d.index)
+            .text(d.school);
+    });
+
     createMap(schoolMarkers, minorityMarkers, demoMarkers);
-}
+};
 
 
 d3.json(schoolLink, createLayers);

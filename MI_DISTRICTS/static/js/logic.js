@@ -146,8 +146,8 @@ function populate_piechart(data){
     .outerRadius(80);
 
     var label = d3.arc()
-                      .outerRadius(50)
-                      .innerRadius(80);
+        .outerRadius(50)
+        .innerRadius(80);
 
 
     g.selectAll(null)
@@ -204,7 +204,6 @@ function populate_piechart(data){
     .style('font-family', 'sans-serif')
     .style('font-size', `${labelHeight}px`);
   }
-
 
 function createMap(districts) {
     // Create base layers
