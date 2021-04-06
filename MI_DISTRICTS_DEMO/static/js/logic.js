@@ -1,5 +1,3 @@
-/////////------------------------------------------------------///////////
-
 // Set a same-site cookie for first-party contexts
 document.cookie = 'cookie1=value1; SameSite=Lax';
 // Set a cross-site cookie for third-party contexts
@@ -8,10 +6,16 @@ document.cookie = 'cookie2=value2; SameSite=None; Secure';
 // Create variable to link drop down menu
 var dropdownmenu = d3.select('#selDataset');
 
-// API links
+function chooseDemo(per_white) {
+    return per_white < 50 ? 'blue' :
+    'red' ;
+}
+
+// API link
 var districtLink = "https://school-data-server.herokuapp.com/api";
 
 var districtMarkers = [];
+var demoMarkers = [];
 
 function piechart(data, district){
     
@@ -194,8 +198,9 @@ function createMap(districts) {
         accessToken: API_KEY
     });
 
-    // Create layer group
+    // Create layer groups
     var districts = L.layerGroup(districtMarkers);
+    var demo = L.layerGroup(demoMarkers);
 
     // Create a baseMaps object
     var baseMaps = {
@@ -205,6 +210,7 @@ function createMap(districts) {
     // Create an overlay object
     var overlayMaps = {
         "All Districts": districts,
+        "Majority-Minority": demo,
     };
 
     // Create map object
@@ -232,7 +238,8 @@ function createLayers(data) {
         var majority_minority = data.district_data[i].majority_minority;
         var district_location = [lat,lng];
         var per_white = data.district_data[i].ave_prcnt_wht;
-                
+        var demo_data = {White:data.district_data[i].ave_prcnt_wht, Black:data.district_data[i].ave_prcnt_bk, Hispanic:data.district_data[i].ave_prcnt_hisp, Asian:data.district_data[i].ave_prcnt_asn, Other:data.district_data[i].ave_prcnt_othr};
+        
         var marker = 
             L.circle(district_location, {
                 color: "white",
@@ -240,8 +247,29 @@ function createLayers(data) {
                 fillOpacity: 0.75,
                 radius: 2000,
             
-            }).bindPopup(district + "<br> Free and Reduced Lunch Eligibility: " + frl_count + "%" + "<br> Majority-Minority District: " + majority_minority)
+            }).bindPopup(piechart(demo_data, district))
         districtMarkers.push(marker);  
+    }
+
+    for (var i = 0; i < data.district_data.length; i++) {
+        var lat = data.district_data[i].lat;
+        var lng = data.district_data[i].lng;
+        var district = data.district_data[i].district;
+        var frl_count = data.district_data[i].prcnt_stdnts_eligible_for_frl;
+        var majority_minority = data.district_data[i].majority_minority;
+        var district_location = [lat,lng];
+        var demo_data = {White:data.district_data[i].ave_prcnt_wht, Black:data.district_data[i].ave_prcnt_bk, Hispanic:data.district_data[i].ave_prcnt_hisp, Asian:data.district_data[i].ave_prcnt_asn, Other:data.district_data[i].ave_prcnt_othr};
+        var per_white = data.district_data[i].ave_prcnt_wht;
+                
+        var marker = L.circle(district_location, 500, {
+            stroke: true,
+            opacity:1,    
+            color: chooseDemo(per_white),
+            fillColor: chooseDemo(per_white),
+            fillOpacity: 0.75,
+            radius: 2000
+            }).bindPopup(piechart(demo_data, district))
+    demoMarkers.push(marker);  
     }
 
     var data_distnames = data.district_data;
@@ -252,11 +280,8 @@ function createLayers(data) {
             .text(d.district);
     });
 
-    createMap(districtMarkers);
+    createMap(districtMarkers, demoMarkers);
 };
 
 
 d3.json(districtLink, createLayers);
-
-
-  
