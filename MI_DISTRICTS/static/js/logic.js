@@ -148,7 +148,7 @@ function createMap(districts) {
     });
 
     L.control.layers(baseMaps, overlayMaps, {
-        collapsed: false
+        collapsed: true
     }).addTo(map);
 };
 
