@@ -120,7 +120,7 @@ function createMap(districts) {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         accessToken: API_KEY,
-        maxZoom: 19
+        maxZoom: 18
     });
     // Create two separate layer groups: one for cities and one for states
     var districts = L.layerGroup(districtMarkers);
@@ -211,9 +211,9 @@ function createLayers(data) {
         var demo_data = {White:data.district_data[i].ave_prcnt_wht, Black:data.district_data[i].ave_prcnt_bk, Hispanic:data.district_data[i].ave_prcnt_hisp, Asian:data.district_data[i].ave_prcnt_asn, Other:data.district_data[i].ave_prcnt_othr}
         var per_white = data.district_data[i].ave_prcnt_wht;
         var frl_count = data.district_data[i].prcnt_stdnts_eligible_for_frl;
-        var school_location = [lat, lng];
+        var district_location = [lat, lng];
 
-        var marker = L.circle(school_location, 500, {
+        var marker = L.circle(district_location, 500, {
             stroke: true,
             opacity: 1,
             fillOpacity: 0.75,

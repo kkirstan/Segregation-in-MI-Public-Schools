@@ -168,10 +168,10 @@ function createLayers(data) {
         var marker = 
             L.circle(school_location, 500, {
                 stroke: true,
-                color: chooseColor(frl_count),
+                color: chooseColor(frl_count, per_white),
                 opacity: 1,
                 fill: true,
-                fillColor: chooseColor(frl_count),
+                fillColor: chooseColor(frl_count, per_white),
                 fillOpacity: 1,
             
             }).bindPopup(school + "<br> Free and Reduced Lunch Eligibility: " + frl_count + "%" + "<br> Majority-Minority School: " + majority_minority)
