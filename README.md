@@ -10,7 +10,7 @@ Files and Folders:
 index.html - this file (i.e. the one you find directly in the repo) is the front page of the website that connects all the dashboards and the api together. 
 
 API_FRONT_END - this folder only contains an index.html which serves as the front end of the api component of this project. For the full api go to this repository:
-https://github.com/robertodiazbriones/Project_2
+https://github.com/robertodiazbriones/Project_2.
 
 MI_DISTRICTS - contains code for a district level analysis of free and reduced lunch percentage by district as well as demographics, which reveals large disparities
 in income distribution. 
